@@ -11,11 +11,14 @@ import { useToast } from "@/hooks/use-toast";
 interface ItemCardProps {
   item: Item;
   onContactClick: (item: Item) => void;
+  currentUserEmail?: string;
 }
 
-const ItemCard = ({ item, onContactClick }: ItemCardProps) => {
+const ItemCard = ({ item, onContactClick, currentUserEmail }: ItemCardProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const isItemPoster = currentUserEmail === item.contactInfo;
 
   const markAsClaimed = useMutation({
     mutationFn: () => updateItemStatus(item.id, "claimed"),
@@ -80,7 +83,7 @@ const ItemCard = ({ item, onContactClick }: ItemCardProps) => {
           Reported {format(new Date(item.timeReported), "MMM d, h:mm a")}
         </div>
         <div className="flex gap-2">
-          {item.status === "found" && (
+          {item.status === "found" && isItemPoster && (
             <Button
               size="sm"
               onClick={() => markAsClaimed.mutate()}

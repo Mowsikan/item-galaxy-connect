@@ -13,6 +13,9 @@ import ItemCard from "@/components/ItemCard";
 const Dashboard = () => {
   const [contactItem, setContactItem] = useState<Item | null>(null);
   
+  // For demo purposes, we'll use a hardcoded email. In a real app, this would come from authentication
+  const currentUserEmail = "finder@university.edu";
+  
   const { data: items, isLoading, error } = useQuery({
     queryKey: ["items"],
     queryFn: getItems
@@ -70,7 +73,12 @@ const Dashboard = () => {
               <TabsContent value="all" className="mt-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {items?.map(item => (
-                    <ItemCard key={item.id} item={item} onContactClick={handleContactClick} />
+                    <ItemCard 
+                      key={item.id} 
+                      item={item} 
+                      onContactClick={handleContactClick}
+                      currentUserEmail={currentUserEmail}
+                    />
                   ))}
                 </div>
               </TabsContent>
@@ -78,7 +86,12 @@ const Dashboard = () => {
               <TabsContent value="lost" className="mt-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {lostItems.map(item => (
-                    <ItemCard key={item.id} item={item} onContactClick={handleContactClick} />
+                    <ItemCard 
+                      key={item.id} 
+                      item={item} 
+                      onContactClick={handleContactClick}
+                      currentUserEmail={currentUserEmail}
+                    />
                   ))}
                 </div>
               </TabsContent>
@@ -86,7 +99,12 @@ const Dashboard = () => {
               <TabsContent value="found" className="mt-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {foundItems.map(item => (
-                    <ItemCard key={item.id} item={item} onContactClick={handleContactClick} />
+                    <ItemCard 
+                      key={item.id} 
+                      item={item} 
+                      onContactClick={handleContactClick}
+                      currentUserEmail={currentUserEmail}
+                    />
                   ))}
                 </div>
               </TabsContent>
