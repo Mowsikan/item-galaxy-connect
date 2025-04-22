@@ -19,6 +19,7 @@ const ItemCard = ({ item, onContactClick, currentUserEmail }: ItemCardProps) => 
   const queryClient = useQueryClient();
 
   const isItemPoster = currentUserEmail === item.contactInfo;
+  const canMarkAsClaimed = item.status === "found" && isItemPoster;
 
   const markAsClaimed = useMutation({
     mutationFn: () => updateItemStatus(item.id, "claimed"),
@@ -83,7 +84,7 @@ const ItemCard = ({ item, onContactClick, currentUserEmail }: ItemCardProps) => 
           Reported {format(new Date(item.timeReported), "MMM d, h:mm a")}
         </div>
         <div className="flex gap-2">
-          {item.status === "found" && isItemPoster && (
+          {canMarkAsClaimed && (
             <Button
               size="sm"
               onClick={() => markAsClaimed.mutate()}

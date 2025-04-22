@@ -1,4 +1,3 @@
-
 export type ItemCategory = 
   | "electronics" 
   | "clothing" 
@@ -9,6 +8,17 @@ export type ItemCategory =
   | "other";
 
 export type ItemStatus = "lost" | "found" | "claimed";
+
+export interface NewItemData {
+  title: string;
+  description: string;
+  category: ItemCategory;
+  status: ItemStatus;
+  location: string;
+  date: string;
+  contactInfo: string;
+  imageUrl?: string;
+}
 
 export interface Item {
   id: string;
