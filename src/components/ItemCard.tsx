@@ -1,0 +1,72 @@
+
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin } from "lucide-react";
+import { Item } from "@/types/item";
+import { format } from "date-fns";
+
+interface ItemCardProps {
+  item: Item;
+  onContactClick: (item: Item) => void;
+}
+
+const ItemCard = ({ item, onContactClick }: ItemCardProps) => {
+  return (
+    <Card className={`${item.status === "lost" ? "lost-item-card" : "found-item-card"} overflow-hidden transition-all hover:shadow-md animate-slide-up`}>
+      <CardHeader className="p-4 pb-2">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="font-semibold text-lg line-clamp-1">{item.title}</h3>
+            <div className="flex items-center text-sm text-muted-foreground mt-1">
+              <Calendar className="h-4 w-4 mr-1" />
+              <span>{format(new Date(item.date), "MMM d, yyyy")}</span>
+              <MapPin className="h-4 w-4 ml-3 mr-1" />
+              <span className="line-clamp-1">{item.location}</span>
+            </div>
+          </div>
+          <Badge 
+            variant={item.status === "lost" ? "default" : "secondary"}
+            className={`${item.status === "lost" ? "bg-lost" : "bg-found"} uppercase`}
+          >
+            {item.status}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 pt-2">
+        <div className="flex gap-4">
+          {item.imageUrl && (
+            <div className="shrink-0 h-24 w-24 rounded overflow-hidden bg-muted">
+              <img 
+                src={item.imageUrl} 
+                alt={item.title} 
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
+          <div>
+            <p className="text-sm line-clamp-3">{item.description}</p>
+            <Badge variant="outline" className="mt-2">
+              {item.category}
+            </Badge>
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter className="p-4 pt-2 flex justify-between">
+        <div className="text-xs text-muted-foreground">
+          Reported {format(new Date(item.timeReported), "MMM d, h:mm a")}
+        </div>
+        <Button 
+          size="sm" 
+          variant="outline" 
+          onClick={() => onContactClick(item)}
+          className={item.status === "lost" ? "text-lost hover:text-lost/90" : "text-found hover:text-found/90"}
+        >
+          Contact
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default ItemCard;
