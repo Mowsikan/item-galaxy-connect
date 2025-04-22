@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getItems } from "@/services/itemService";
 import { Item } from "@/types/item";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -12,9 +12,7 @@ import ItemCard from "@/components/ItemCard";
 
 const Dashboard = () => {
   const [contactItem, setContactItem] = useState<Item | null>(null);
-  
-  // For demo purposes, we'll use a hardcoded email. In a real app, this would come from authentication
-  const currentUserEmail = "finder@university.edu";
+  const { user } = useAuth();
   
   const { data: items, isLoading, error } = useQuery({
     queryKey: ["items"],
@@ -77,7 +75,7 @@ const Dashboard = () => {
                       key={item.id} 
                       item={item} 
                       onContactClick={handleContactClick}
-                      currentUserEmail={currentUserEmail}
+                      currentUserEmail={user?.email}
                     />
                   ))}
                 </div>
@@ -90,7 +88,7 @@ const Dashboard = () => {
                       key={item.id} 
                       item={item} 
                       onContactClick={handleContactClick}
-                      currentUserEmail={currentUserEmail}
+                      currentUserEmail={user?.email}
                     />
                   ))}
                 </div>
@@ -103,7 +101,7 @@ const Dashboard = () => {
                       key={item.id} 
                       item={item} 
                       onContactClick={handleContactClick}
-                      currentUserEmail={currentUserEmail}
+                      currentUserEmail={user?.email}
                     />
                   ))}
                 </div>
