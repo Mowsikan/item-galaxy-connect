@@ -1,10 +1,12 @@
-
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, HandHeart } from "lucide-react";
 import { Item } from "@/types/item";
 import { format } from "date-fns";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateItemStatus } from "@/services/itemService";
+import { useToast } from "@/hooks/use-toast";
 
 interface ItemCardProps {
   item: Item;
@@ -12,6 +14,27 @@ interface ItemCardProps {
 }
 
 const ItemCard = ({ item, onContactClick }: ItemCardProps) => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const markAsClaimed = useMutation({
+    mutationFn: () => updateItemStatus(item.id, "claimed"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["items"] });
+      toast({
+        title: "Item Updated",
+        description: "The item has been marked as claimed.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update item status. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   return (
     <Card className={`${item.status === "lost" ? "lost-item-card" : "found-item-card"} overflow-hidden transition-all hover:shadow-md animate-slide-up`}>
       <CardHeader className="p-4 pb-2">
@@ -56,14 +79,27 @@ const ItemCard = ({ item, onContactClick }: ItemCardProps) => {
         <div className="text-xs text-muted-foreground">
           Reported {format(new Date(item.timeReported), "MMM d, h:mm a")}
         </div>
-        <Button 
-          size="sm" 
-          variant="outline" 
-          onClick={() => onContactClick(item)}
-          className={item.status === "lost" ? "text-lost hover:text-lost/90" : "text-found hover:text-found/90"}
-        >
-          Contact
-        </Button>
+        <div className="flex gap-2">
+          {item.status === "found" && (
+            <Button
+              size="sm"
+              onClick={() => markAsClaimed.mutate()}
+              disabled={markAsClaimed.isPending}
+              className="text-green-600 hover:text-green-700"
+            >
+              <HandHeart className="mr-1 h-4 w-4" />
+              Mark as Claimed
+            </Button>
+          )}
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={() => onContactClick(item)}
+            className={item.status === "lost" ? "text-lost hover:text-lost/90" : "text-found hover:text-found/90"}
+          >
+            Contact
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );

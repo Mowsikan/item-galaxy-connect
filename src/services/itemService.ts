@@ -1,4 +1,3 @@
-
 import { Item, ItemCategory, ItemStatus } from "@/types/item";
 
 // Mock data
@@ -119,4 +118,20 @@ export const addItem = async (item: Omit<Item, "id" | "timeReported">): Promise<
 export const getCategories = async (): Promise<ItemCategory[]> => {
   await delay(300);
   return ["electronics", "clothing", "accessories", "books", "documents", "keys", "other"];
+};
+
+export const updateItemStatus = async (itemId: string, newStatus: ItemStatus): Promise<Item> => {
+  await delay(800); // Simulate network request
+  const itemIndex = mockItems.findIndex(item => item.id === itemId);
+  
+  if (itemIndex === -1) {
+    throw new Error("Item not found");
+  }
+  
+  mockItems[itemIndex] = {
+    ...mockItems[itemIndex],
+    status: newStatus
+  };
+  
+  return mockItems[itemIndex];
 };
