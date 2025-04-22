@@ -19,7 +19,20 @@ const ItemCard = ({ item, onContactClick, currentUserEmail }: ItemCardProps) => 
   const queryClient = useQueryClient();
 
   const isItemPoster = currentUserEmail === item.contactInfo;
-  const canMarkAsClaimed = item.status === "found" && isItemPoster;
+  const canMarkAsClaimed = (item.status === "found" || item.status === "lost") && isItemPoster;
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "lost":
+        return "bg-lost";
+      case "found":
+        return "bg-found";
+      case "claimed":
+        return "bg-green-500";
+      default:
+        return "bg-muted";
+    }
+  };
 
   const markAsClaimed = useMutation({
     mutationFn: () => updateItemStatus(item.id, "claimed"),
@@ -53,8 +66,8 @@ const ItemCard = ({ item, onContactClick, currentUserEmail }: ItemCardProps) => 
             </div>
           </div>
           <Badge 
-            variant={item.status === "lost" ? "default" : "secondary"}
-            className={`${item.status === "lost" ? "bg-lost" : "bg-found"} uppercase`}
+            variant={item.status === "claimed" ? "default" : item.status === "lost" ? "default" : "secondary"}
+            className={`${getStatusColor(item.status)} uppercase`}
           >
             {item.status}
           </Badge>
@@ -84,7 +97,7 @@ const ItemCard = ({ item, onContactClick, currentUserEmail }: ItemCardProps) => 
           Reported {format(new Date(item.timeReported), "MMM d, h:mm a")}
         </div>
         <div className="flex gap-2">
-          {canMarkAsClaimed && (
+          {canMarkAsClaimed && item.status !== "claimed" && (
             <Button
               size="sm"
               onClick={() => markAsClaimed.mutate()}
