@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getItems } from "@/services/itemService";
@@ -21,6 +22,7 @@ const Dashboard = () => {
 
   const lostItems = items?.filter(item => item.status === "lost") || [];
   const foundItems = items?.filter(item => item.status === "found") || [];
+  const claimedItems = items?.filter(item => item.status === "claimed") || [];
 
   const handleContactClick = (item: Item) => {
     setContactItem(item);
@@ -66,6 +68,7 @@ const Dashboard = () => {
                 <TabsTrigger value="all">All Items ({items?.length || 0})</TabsTrigger>
                 <TabsTrigger value="lost">Lost Items ({lostItems.length})</TabsTrigger>
                 <TabsTrigger value="found">Found Items ({foundItems.length})</TabsTrigger>
+                <TabsTrigger value="claimed">Claimed Items ({claimedItems.length})</TabsTrigger>
               </TabsList>
               
               <TabsContent value="all" className="mt-0">
@@ -106,6 +109,20 @@ const Dashboard = () => {
                   ))}
                 </div>
               </TabsContent>
+
+              <TabsContent value="claimed" className="mt-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {claimedItems.map(item => (
+                    <ItemCard 
+                      key={item.id} 
+                      item={item} 
+                      onContactClick={handleContactClick}
+                      currentUserEmail={user?.email}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+
             </Tabs>
           </CardContent>
         </Card>
