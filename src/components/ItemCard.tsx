@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ interface ItemCardProps {
 
 const ItemCard = ({ item, onContactClick, currentUserEmail }: ItemCardProps) => {
   const { toast } = useToast();
+  // Safely get the query client - this should no longer be an issue after our fix
   const queryClient = useQueryClient();
 
   const isItemPoster = currentUserEmail === item.contactInfo;
