@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getItems } from "@/services/itemService";
@@ -10,6 +9,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import ItemCard from "@/components/ItemCard";
+import { useSemanticSearch } from "@/hooks/useSemanticSearch";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const Dashboard = () => {
   const [contactItem, setContactItem] = useState<Item | null>(null);
@@ -19,6 +21,10 @@ const Dashboard = () => {
     queryKey: ["items"],
     queryFn: getItems
   });
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { sortedItems: aiItems, isEmbedding, embedError } = useSemanticSearch(items || [], searchQuery);
 
   const lostItems = items?.filter(item => item.status === "lost") || [];
   const foundItems = items?.filter(item => item.status === "found") || [];
@@ -60,6 +66,29 @@ const Dashboard = () => {
         </p>
       </div>
 
+      <div className="flex items-center justify-center mb-8">
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            className="pl-9 pr-3 py-2 font-medium"
+            type="search"
+            placeholder="🔍 Search items with AI (e.g. 'black Samsung phone', 'leather wallet')"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            autoFocus={false}
+            disabled={isEmbedding}
+          />
+          {isEmbedding && (
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted animate-pulse">
+              Thinking...
+            </div>
+          )}
+        </div>
+      </div>
+      {embedError && (
+        <div className="text-center text-destructive text-sm mb-6">{embedError}</div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-3">
           <CardContent className="p-6">
@@ -73,7 +102,7 @@ const Dashboard = () => {
               
               <TabsContent value="all" className="mt-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {items?.map(item => (
+                  {(aiItems || []).map(item => (
                     <ItemCard 
                       key={item.id} 
                       item={item} 
@@ -81,6 +110,9 @@ const Dashboard = () => {
                       currentUserEmail={user?.email}
                     />
                   ))}
+                  {aiItems.length === 0 && !isEmbedding && (
+                    <div className="col-span-full text-muted-foreground text-center py-10">No items found.</div>
+                  )}
                 </div>
               </TabsContent>
               
